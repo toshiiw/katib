@@ -966,7 +966,7 @@ func (d *dbConn) GetSuggestionParam(paramID string) ([]*api.SuggestionParameter,
 func (d *dbConn) GetSuggestionParamList(studyID string) ([]*api.SuggestionParameterSet, error) {
 	var rows *sql.Rows
 	var err error
-	rows, err = d.db.Query("SELECT * FROM suggestion_param WHERE study_id = ?", studyID)
+	rows, err = d.db.Query("SELECT id, suggestion_algo, parameters FROM suggestion_param WHERE study_id = ?", studyID)
 	if err != nil {
 		return nil, err
 	}
@@ -975,13 +975,9 @@ func (d *dbConn) GetSuggestionParamList(studyID string) ([]*api.SuggestionParame
 		var id string
 		var algorithm string
 		var params string
-		var sID string
-		err := rows.Scan(&id, &sID, &algorithm, &params)
+		err := rows.Scan(&id, &algorithm, &params)
 		if err != nil {
 			return nil, err
-		}
-		if studyID != sID {
-			continue
 		}
 		var pArray []string
 		if len(params) > 0 {
@@ -1074,7 +1070,7 @@ func (d *dbConn) GetEarlyStopParam(paramID string) ([]*api.EarlyStoppingParamete
 func (d *dbConn) GetEarlyStopParamList(studyID string) ([]*api.EarlyStoppingParameterSet, error) {
 	var rows *sql.Rows
 	var err error
-	rows, err = d.db.Query("SELECT * FROM earlystopping_param WHERE study_id = ?", studyID)
+	rows, err = d.db.Query("SELECT id, earlystop_algo, parameters FROM earlystopping_param WHERE study_id = ?", studyID)
 	if err != nil {
 		return nil, err
 	}
@@ -1083,13 +1079,9 @@ func (d *dbConn) GetEarlyStopParamList(studyID string) ([]*api.EarlyStoppingPara
 		var id string
 		var algorithm string
 		var params string
-		var sID string
-		err := rows.Scan(&id, &sID, &algorithm, &params)
+		err := rows.Scan(&id, &algorithm, &params)
 		if err != nil {
 			return nil, err
-		}
-		if studyID != sID {
-			continue
 		}
 		var pArray []string
 		if len(params) > 0 {
