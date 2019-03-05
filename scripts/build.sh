@@ -18,7 +18,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-PREFIX="katib"
+PREFIX=${PREFIX:-katib}
 CMD_PREFIX="cmd"
 
 SCRIPT_ROOT=$(dirname ${BASH_SOURCE})/..
