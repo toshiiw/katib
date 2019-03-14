@@ -15,6 +15,7 @@ spec:
         app: vizier
         component: ui
     spec:
+      serviceAccountName: katib-ui
       containers:
       - name: katib-ui
         image: katib/katib-ui
