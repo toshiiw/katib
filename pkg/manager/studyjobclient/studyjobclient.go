@@ -60,6 +60,17 @@ func (s *StudyjobClient) GetStudyJobList(namespace ...string) (*studyjobv1alpha1
 	return result, err
 }
 
+// XXX needs to be consolidated
+func (s *StudyjobClient) GetStudyJobListRaw(namespace ...string) ([]byte, error) {
+	ns := getNamespace(namespace...)
+	return s.client.
+		Get().
+		Namespace(ns).
+		Resource("studyjobs").
+		Do().
+		Raw()
+}
+
 func (s *StudyjobClient) CreateStudyJob(studyJob *studyjobv1alpha1.StudyJob, namespace ...string) (*studyjobv1alpha1.StudyJob, error) {
 	result := &studyjobv1alpha1.StudyJob{}
 	ns := getNamespace(namespace...)

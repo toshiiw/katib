@@ -679,3 +679,16 @@ func (k *KatibUIHandler) Worker(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 }
+
+// XXX at least this should be moved elsewhere
+func (k *KatibUIHandler) GetStudyJobList(w http.ResponseWriter, r *http.Request) {
+	result, err := k.studyjobClient.GetStudyJobListRaw()
+	if err != nil {
+		log.Printf("%v", err)
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "%v", err)
+		return
+	}
+	w.Header().Add("Content-Type", "application/json")
+	w.Write(result)
+}

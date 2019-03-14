@@ -22,6 +22,9 @@ func main() {
 			r.Post("/workertemplates", kuh.UpdateWorkerTemplate)
 			r.Get("/metricscollectortemplates", kuh.MetricsCollectorTemplate)
 			r.Post("/metricscollectortemplates", kuh.UpdateMetricsCollectorTemplate)
+			r.Route("/proxy", func(r chi.Router) {
+				r.Get("/GetStudyJobList", kuh.GetStudyJobList)
+			})
 			r.Route("/{studyid}", func(r chi.Router) {
 				r.Get("/", kuh.Study)
 				r.Get("/csv", kuh.StudyInfoCsv)
