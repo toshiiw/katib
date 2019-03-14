@@ -6,6 +6,15 @@ metadata:
   labels:
     app: vizier
     component: core-rest
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind:  Mapping
+      name:  rest_mapping
+      prefix: /api/
+      rewrite: /api/
+      service: http://vizier-core-rest:80
 spec:
   type: ClusterIP
   ports:

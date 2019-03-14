@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Katib UI</title>
+        <link rel="stylesheet" href="/katib/static/css/bootstrap.css">
+        <link rel="stylesheet" href="/katib/static/css/dropmenu.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
+        <link rel="icon" type="image/x-icon" href="/katib/static/img/favicon.ico">
+        <style>
+         .content-list{
+             margin-top: 100px;
+         }
+        </style>
+    </head>
+    <body>
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+        <script src="/katib/static/js/bootstrap.js"></script>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://bl.ocks.org/syntagmatic/raw/3341641/render-queue.js"></script>
+
+<div class="container-fluid bg-active">
+<h1 id="list_header">Study List</h1>
+<script>
+$.getJSON("/api/Manager/GetStudyList",  function(result){
+  var study_template = `        <div class="card text-white border-light mb-3" id="div_{{k}}">
+            <div class="card-header rounded" id="div_header_{{k}}">StudyJob is not found</div>
+            <div class="card-body rounded">
+                <h4 class="card-title mb-2">{{k}}</h4>
+                <table class="table table-hover">
+                  <thead>
+                      <tr>
+                          <th scope="col">StudyID</th>
+                          <th scope="col">Owner</th>
+                          <th scope="col">StudyJobName</th>
+                          <th scope="col">StudyJobCondition</th>
+                      </tr>
+                  </thead>
+                  <tbody id="studyjob_content_{{k}}">
+                  </tbody>
+                </table>
+                <a href="/katib/studyjob?studyname={{k}}" class="btn btn-info btn-sm" role="button">Create a New Job</a>
+            </div>
+        </div>
+`
+  var ov = result.study_overviews
+  var summaries = {}
+  for(var i = 0; i < ov.length; i++) {
+     if (! (ov[i].name in summaries)) {
+	summaries[ov[i].name] = {lastupdate: 0}
+		     var ss = study_template.replace(/{{k}}/g, ov[i].name)
+		     $("#list_header").after(ss)
+     }
+    var r = ov[i]
+    // id, owner, name, condition
+    $("#studyjob_content_" + r.name).append("<tr><td><a href=\"/katib/" + r.id + "\">" + r.id + "</a></td><td>" + r.owner + "</td><td id=\"studyjob_name_" + r.id + "\"></td><td id=\"studyjob_condition_" + r.id + "\">None</td></tr>")
+  }
+
+  $.getJSON("/katib/proxy/GetStudyJobList", function(result){
+    var list = result.items
+    var colormap = {Running: "info", Completed: "success", Failed: "danger"}
+    for(var i = 0; i < list.length; i++) {
+      var r = list[i]
+      if (! (r.spec.studyName in summaries)) {
+        continue
+      }
+      $("#studyjob_name_" + r.status.studyid).text(r.metadata.name)
+      $("#studyjob_condition_" + r.status.studyid).text(r.status.condition)
+      var timestamp = Date.parse(r.status.lastReconcileTime)
+      if (summaries[r.spec.studyName].lastupdate < timestamp) {
+        summaries[r.spec.studyName].lastupdate = timestamp
+	// I think pkg/ui/ui.go has mixed up the timestamp comparison
+	var color = "light"
+	if (r.status.condition in colormap) {
+	  color = colormap[r.status.condition]
+	}
+	$("#div_" + r.spec.studyName).attr("class", "card text-white border-" + color + " mb-3")
+	$("#div_header_" + r.spec.studyName).text("Last Update: " + r.status.lastReconcileTime)
+      }
+    }
+  })
+})
+</script>
+        <a href="/katib/studyjob" class="btn btn-primary btn-sm mb-3" style="min-width: 100%" role="button"><i class="fa fa-plus-circle" style="color:#6BCAE2;"></i> Create a New Study and StudyJob</a>
+</div>
+
+    </body>
+</html>

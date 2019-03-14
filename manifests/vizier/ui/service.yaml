@@ -6,6 +6,15 @@ metadata:
   labels:
     app: vizier
     component: ui
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind:  Mapping
+      name:  old_mapping
+      prefix: /katib/
+      rewrite: /katib/
+      service: http://katib-ui:80
 spec:
   type: ClusterIP
   ports:
@@ -15,3 +24,29 @@ spec:
   selector:
     app: vizier
     component: ui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: katib-ui-nginx
+  namespace: kubeflow
+  labels:
+    app: vizier
+    component: ui-nginx
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind:  Mapping
+      name:  static_mapping
+      prefix: /
+      service: http://katib-ui-nginx:80
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      protocol: TCP
+      name: ui
+  selector:
+    app: vizier
+    component: ui-nginx

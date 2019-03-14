@@ -31,3 +31,35 @@ spec:
 #          limits:
 #            cpu: 500m
 #            memory: 500M
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: katib-ui-nginx
+  namespace: kubeflow
+  labels:
+    app: vizier
+    component: ui-nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: katib-ui-nginx
+      labels:
+        app: vizier
+        component: ui-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: nginx-static
+        ports:
+          - containerPort: 80
+            protocol: TCP
+      volumes:
+      - name: nginx-static
+        hostPath:
+          path: /test
+          type: Directory
